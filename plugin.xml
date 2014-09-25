@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
-	id="net.trentgardner.cordova.androidwear"
-	version="0.0.1">
+    id="net.trentgardner.cordova.androidwear"
+    version="0.0.1">
 
-	<name>Android Wear Connector</name>
+    <name>Android Wear Connector</name>
 
     <license>Apache 2.0</license>
-	
-	<engines>
-		<engine name="cordova" version=">=3.0.0" />
-	</engines>
-	
-	<platform name="android">
-	
-		<js-module src="www/androidwear.js" name="AndroidWear">
-			<clobbers target="AndroidWear" />
-		</js-module>
+    
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+    
+    <platform name="android">
+    
+        <js-module src="www/androidwear.js" name="AndroidWear">
+            <clobbers target="AndroidWear" />
+        </js-module>
 
-		<config-file target="res/xml/config.xml" parent="/*">
-			<feature name="androidwear" >
-				<param name="android-package" value="net.trentgardner.cordova.androidwear.AndroidWearPlugin"/>
-			</feature>
-		</config-file>
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="androidwear" >
+                <param name="android-package" value="net.trentgardner.cordova.androidwear.AndroidWearPlugin"/>
+            </feature>
+        </config-file>
         
-		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<meta-data
-				android:name="com.google.android.gms.version"
-				android:value="@integer/google_play_services_version" />
-			
-			<service
-				android:name="net.trentgardner.cordova.androidwear.WearProviderService"
-				android:enabled="true"
-				android:process=":remote">
-				
-				<intent-filter >
-					<action android:name="net.trentgardner.cordova.androidwear.WearProviderService" />
-				</intent-filter>
-			</service>
-		</config-file>
-		
-		<source-file src="src/android/AndroidWearPlugin.java" target-dir="src/net/trentgardner/cordova/androidwear" />
-		<source-file src="src/android/WearProviderService.java" target-dir="src/net/trentgardner/cordova/androidwear" />
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version" />
+            
+            <service
+                android:name="net.trentgardner.cordova.androidwear.WearProviderService"
+                android:enabled="true"
+                android:process=":remote">
+                
+                <intent-filter >
+                    <action android:name="net.trentgardner.cordova.androidwear.WearProviderService" />
+                </intent-filter>
+            </service>
+        </config-file>
+        
+        <source-file src="src/android/AndroidWearPlugin.java" target-dir="src/net/trentgardner/cordova/androidwear" />
+        <source-file src="src/android/WearProviderService.java" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageApi.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageListener.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
-	</platform>
+    </platform>
 </plugin>
