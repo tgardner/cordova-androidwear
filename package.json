@@ -1,0 +1,15 @@
+{
+    "version": "0.0.1",
+    "name": "net.trentgardner.cordova.androidwear",
+    "cordova_name": "Android Wear Connector",
+    "license": "Apache 2.0",
+    "platforms": [
+        "android"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        }
+    ]
+}
