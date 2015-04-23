@@ -10,11 +10,7 @@ The plugin has functions that allows your app to have bidirectional communicatio
 
 1. Add the plugin to your cordova project.
 
-2. You need to install **Google Play Services** from the `Android Extras` section using the Android SDK manager (run `android`).
-  You need to add the following line to your `local.properties`
-  `android.library.reference.1=PATH_TO_ANDROID_SDK/sdk/extras/google/google_play_services/libproject/google-play-services_lib`
-
-  Alternatively, you can run `cordova plugin add com.google.playservices`
+2. Bundle your watch apk in your project by following the instructions in the [documentation](https://developer.android.com/training/wearables/apps/packaging.html#PackageManually).
 
 ## Example
   ```javascript
@@ -28,3 +24,5 @@ The plugin has functions that allows your app to have bidirectional communicatio
       AndroidWear.sendData(e.handle, "Hello From Cordova!");
   });
   ```
+
+A slightly more complete example is available at https://github.com/tgardner/cordova-androidwear-example
