@@ -25,6 +25,7 @@ import android.util.Log;
 
 import net.trentgardner.cordova.androidwear.WearMessageApi;
 import net.trentgardner.cordova.androidwear.WearMessageListener;
+import net.trentgardner.cordova.androidwear.WearProviderService;
 
 public class AndroidWearPlugin extends CordovaPlugin {
 	private final String TAG = AndroidWearPlugin.class.getSimpleName();
@@ -33,9 +34,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	private final String ACTION_ONDATARECEIVED = "onDataReceived";
 	private final String ACTION_ONERROR = "onError";
 	private final String ACTION_SENDDATA = "sendData";
-
-	private final String SERVICE_INTENT_ACTION = "net.trentgardner.cordova.androidwear.WearProviderService";
-
+	
 	private WearMessageApi api = null;
 	private Intent serviceIntent = null;
 
@@ -152,7 +151,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 		
 		Activity context = cordova.getActivity();
 		
-		serviceIntent = new Intent(SERVICE_INTENT_ACTION);
+		serviceIntent = new Intent(context, WearProviderService.class);
 		
 		Log.d(TAG, "Attempting to start service");
 		context.startService(serviceIntent);
