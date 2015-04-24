@@ -36,10 +36,6 @@
         </config-file>
         
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <meta-data
-                android:name="com.google.android.gms.version"
-                android:value="@integer/google_play_services_version" />
-            
             <service
                 android:name="net.trentgardner.cordova.androidwear.WearProviderService"
                 android:enabled="true"
@@ -51,5 +47,6 @@
         <source-file src="src/android/WearProviderService.java" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageApi.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageListener.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
+        
     </platform>
 </plugin>
