@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
     id="net.trentgardner.cordova.androidwear"
-    version="0.0.2">
+    version="0.0.3">
 
     <name>Android Wear Connector</name>
 
+    <description>Communication from your cordova application to an Android Wear application.</description>
+
+    <author>Trent Gardner</author>
+
     <license>Apache 2.0</license>
+
+    <keywords>AndroidWear, Android, Wear, Watch, Wearble</keywords>
+
+    <repo>https://github.com/tgardner/cordova-androidwear.git</repo>
+
+    <issue>https://github.com/tgardner/cordova-androidwear/issues</issue>
     
     <engines>
         <engine name="cordova" version=">=3.0.0" />
