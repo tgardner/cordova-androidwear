@@ -23,7 +23,8 @@
     
     <platform name="android">
 
-        <dependency id="com.google.playservices@21.0.0" url="https://github.com/MobileChromeApps/google-play-services" />
+        <framework src="com.google.android.gms:play-services-base:+" />
+        <framework src="com.google.android.gms:play-services-wearable:+" />
     
         <js-module src="www/androidwear.js" name="AndroidWear">
             <clobbers target="AndroidWear" />
