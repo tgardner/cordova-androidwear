@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
-    id="net.trentgardner.cordova.androidwear"
-    version="0.0.3">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-androidwear"
+    version="1.0.0">
 
-    <name>Android Wear Connector</name>
+    <name>Android Wear</name>
 
     <description>Communication from your cordova application to an Android Wear application.</description>
 

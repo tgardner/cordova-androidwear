@@ -1,9 +1,9 @@
 {
   "name": "cordova-androidwear",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Communication from your cordova application to an Android Wear application.",
   "cordova": {
-    "id": "net.trentgardner.cordova.androidwear",
+    "id": "cordova-androidwear",
     "platforms": [
       "android"
     ]
