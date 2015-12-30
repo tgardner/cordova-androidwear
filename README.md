@@ -4,7 +4,11 @@
 The plugin has functions that allows your app to have bidirectional communication with Android Wear Smartwatch applications and Cordova applications.
 
 ## Installation
-`cordova plugin add net.trentgardner.cordova.androidwear`
+With Cordova CLI, from npm:
+```
+$ cordova plugin add cordova-androidwear
+$ cordova prepare
+```
 
 ## Usage
 
