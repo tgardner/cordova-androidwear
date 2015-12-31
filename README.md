@@ -29,4 +29,4 @@ $ cordova prepare
   });
   ```
 
-A slightly more complete example is available at https://github.com/tgardner/cordova-androidwear-example
+A slightly more complete example is [available](https://github.com/tgardner/cordova-androidwear-example).
