@@ -1,19 +1,5 @@
 package net.trentgardner.cordova.androidwear;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-
-import org.apache.cordova.CordovaArgs;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.PluginResult;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,22 +9,27 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-import net.trentgardner.cordova.androidwear.WearMessageApi;
-import net.trentgardner.cordova.androidwear.WearMessageListener;
-import net.trentgardner.cordova.androidwear.WearProviderService;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaArgs;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 public class AndroidWearPlugin extends CordovaPlugin {
 	private final String TAG = AndroidWearPlugin.class.getSimpleName();
 
-	private final String ACTION_ONCONNECT = "onConnect";
-	private final String ACTION_ONDATARECEIVED = "onDataReceived";
-	private final String ACTION_ONERROR = "onError";
-	private final String ACTION_SENDDATA = "sendData";
-	
 	private WearMessageApi api = null;
 	private Intent serviceIntent = null;
 
-	private Hashtable<String, WearConnection> connections = new Hashtable<String, WearConnection>();
+	private Hashtable<String, WearConnection> connections = new Hashtable<>();
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
@@ -72,7 +63,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 			Log.d(TAG, String.format("messageListener.onDataReceived - nodeId: %s", nodeId));
 
 			WearConnection connection = connections.get(nodeId);
-			if (connection == null) 
+			if (connection == null)
 				connection = createNewWearConnection(nodeId);
 
 			connection.onDataReceived(data);
@@ -104,58 +95,56 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	private class WearConnection {
 		private String mHandle;
 
-		private List<CallbackContext> dataCallbacks = new ArrayList<CallbackContext>();
-		private List<CallbackContext> errorCallbacks = new ArrayList<CallbackContext>();
+		private List<CallbackContext> dataCallbacks = new ArrayList<>();
+		private List<CallbackContext> errorCallbacks = new ArrayList<>();
 
-		public WearConnection(String handle) {
+		WearConnection(String handle) {
 			mHandle = handle;
 		}
 
-		public void addDataListener(CallbackContext callback) {
+		void addDataListener(CallbackContext callback) {
 			dataCallbacks.add(callback);
 		}
 
-		public void addErrorListener(CallbackContext callback) {
+		void addErrorListener(CallbackContext callback) {
 			errorCallbacks.add(callback);
 		}
 
-		public void onDataReceived(String data) {
+		void onDataReceived(String data) {
 			notifyCallbacks(dataCallbacks, createJSONObject(mHandle, data));
 		}
 
-		public void onError(String data) {
+		void onError(String data) {
 			notifyCallbacks(errorCallbacks, createJSONObject(mHandle, data));
 		}
 
 		private void notifyCallbacks(final List<CallbackContext> callbacks,
-				final JSONObject data) {
-			cordova.getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					Log.d(TAG, String.format("Notifying %d callbacks", callbacks.size()));
+									 final JSONObject data) {
+			cordova.getActivity().runOnUiThread(() -> {
+				Log.d(TAG, String.format("Notifying %d callbacks", callbacks.size()));
 
-					for (CallbackContext context : callbacks) {
-						keepCallback(context, data);
-					}
+				for (CallbackContext context : callbacks) {
+					keepCallback(context, data);
 				}
 			});
 		}
 	}
 
-	private List<CallbackContext> connectCallbacks = new ArrayList<CallbackContext>();
+	private List<CallbackContext> connectCallbacks = new ArrayList<>();
 
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 		super.initialize(cordova, webView);
 
 		Log.d(TAG, "initialize");
-		
+
 		Activity context = cordova.getActivity();
-		
+
 		serviceIntent = new Intent(context, WearProviderService.class);
-		
+
 		Log.d(TAG, "Attempting to start service");
 		context.startService(serviceIntent);
-		
+
 		Log.d(TAG, "Attempting to bind to service");
 		context.bindService(serviceIntent, serviceConnection,
 				Context.BIND_AUTO_CREATE);
@@ -163,10 +152,15 @@ public class AndroidWearPlugin extends CordovaPlugin {
 
 	@Override
 	public boolean execute(String action, CordovaArgs args,
-			CallbackContext callbackContext) throws JSONException {
+						   CallbackContext callbackContext) throws JSONException {
+
+		final String ACTION_ONCONNECT = "onConnect";
+		final String ACTION_ONDATARECEIVED = "onDataReceived";
+		final String ACTION_ONERROR = "onError";
+		final String ACTION_SENDDATA = "sendData";
 
 		if (ACTION_ONCONNECT.equals(action))
-			onConnect(args, callbackContext);
+			onConnect(callbackContext);
 		else if (ACTION_ONDATARECEIVED.equals(action))
 			onDataReceived(args, callbackContext);
 		else if (ACTION_ONERROR.equals(action))
@@ -185,7 +179,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 
 		try {
 			Activity context = cordova.getActivity();
-			
+
 			if (api != null)
 				api.removeListener(messageListener);
 
@@ -202,7 +196,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	}
 
 	private void sendData(final CordovaArgs args,
-			final CallbackContext callbackContext) throws JSONException {
+						  final CallbackContext callbackContext) throws JSONException {
 		Log.d(TAG, "sendData");
 
 		String connectionId = args.getString(0);
@@ -219,21 +213,20 @@ public class AndroidWearPlugin extends CordovaPlugin {
 		}
 	}
 
-	private void onConnect(final CordovaArgs args,
-			final CallbackContext callbackContext) throws JSONException {
+	private void onConnect(final CallbackContext callbackContext) throws JSONException {
 		Log.d(TAG, "onConnect");
 
 		connectCallbacks.add(callbackContext);
 
 		// Alert the client of any existing connections
 		Enumeration<String> keys = connections.keys();
-		while(keys.hasMoreElements()) {
+		while (keys.hasMoreElements()) {
 			connect(callbackContext, keys.nextElement());
 		}
 	}
 
 	private void onDataReceived(final CordovaArgs args,
-			final CallbackContext callbackContext) throws JSONException {
+								final CallbackContext callbackContext) throws JSONException {
 		Log.d(TAG, "onDataReceived");
 
 		String connectionId = args.getString(0);
@@ -246,7 +239,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	}
 
 	private void onError(final CordovaArgs args,
-			final CallbackContext callbackContext) throws JSONException {
+						 final CallbackContext callbackContext) throws JSONException {
 		Log.d(TAG, "onError");
 
 		String connectionId = args.getString(0);
@@ -264,17 +257,15 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	}
 
 	private void notifyCallbacksOfConnection(final String connectionId) {
-		this.cordova.getActivity().runOnUiThread(new Runnable() {
-			public void run() {
-				for (CallbackContext context : connectCallbacks) {
-					connect(context, connectionId);
-				}
+		this.cordova.getActivity().runOnUiThread(() -> {
+			for (CallbackContext context : connectCallbacks) {
+				connect(context, connectionId);
 			}
 		});
 	}
 
 	private void keepCallback(final CallbackContext callbackContext,
-			JSONObject message) {
+							  JSONObject message) {
 		PluginResult r = new PluginResult(PluginResult.Status.OK, message);
 		r.setKeepCallback(true);
 		callbackContext.sendPluginResult(r);

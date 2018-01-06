@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-androidwear"
-    version="1.0.0">
+    version="1.0.1">
 
     <name>Android Wear</name>
 
@@ -42,6 +42,10 @@
                 android:name="net.trentgardner.cordova.androidwear.WearProviderService"
                 android:enabled="true"
                 android:process=":remote">
+                <intent-filter>
+                    <action android:name="com.google.android.gms.wearable.CAPABILITY_CHANGED" />
+                    <data android:scheme="wear" android:host="*" />
+                </intent-filter>
             </service>
         </config-file>
 
@@ -49,6 +53,9 @@
         <source-file src="src/android/WearProviderService.java" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageApi.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageListener.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
+        <!-- Hack for Cordova android 7, not correctly loading aidl -->
+        <source-file src="aidl/android/WearMessageApi.aidl" target-dir="app/src/main/aidl/net/trentgardner/cordova/androidwear" />
+        <source-file src="aidl/android/WearMessageListener.aidl" target-dir="app/src/main/aidl/net/trentgardner/cordova/androidwear" />
         
     </platform>
 </plugin>
