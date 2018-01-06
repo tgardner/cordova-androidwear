@@ -10,6 +10,8 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wearable.CapabilityClient;
 import com.google.android.gms.wearable.CapabilityInfo;
@@ -31,8 +33,8 @@ public class WearProviderService extends Service implements
 	private static final String MESSAGE_PATH = "/NewMessage";
 	private static final String CORDOVA_CAPABILITY = "cordova_messaging";
 
-	private final List<WearMessageListener> listeners = new ArrayList<>();
-	private final Set<String> nodes = new HashSet<>();
+	private final List<WearMessageListener> listeners = new ArrayList<WearMessageListener>();
+	private final Set<String> nodes = new HashSet<String>();
 
 	private static final String TAG = WearProviderService.class.getSimpleName();
 
@@ -138,13 +140,18 @@ public class WearProviderService extends Service implements
 	private void loadNodes() {
 		Task<CapabilityInfo> capabilityTask = Wearable.getCapabilityClient(this)
 				.getCapability(CORDOVA_CAPABILITY, CapabilityClient.FILTER_REACHABLE);
-		capabilityTask.addOnSuccessListener(WearProviderService.this::onCapabilityChanged);
+		capabilityTask.addOnSuccessListener(new OnSuccessListener<CapabilityInfo>() {
+			@Override
+			public void onSuccess(CapabilityInfo capabilityInfo) {
+				WearProviderService.this.onCapabilityChanged(capabilityInfo);
+			}
+		});
 	}
 
 	private void syncNodes(final Set<Node> nodes) {
 		LOGD(TAG, "syncNodes : " + nodes.size());
 
-		List<String> nodeIds = new ArrayList<>();
+		List<String> nodeIds = new ArrayList<String>();
 
 		for (Node node : nodes) {
 			nodeIds.add(node.getId());
@@ -169,14 +176,17 @@ public class WearProviderService extends Service implements
 
 		nodes.add(nodeId);
 
-		mBackgroundHandler.post(() -> {
-			synchronized (listeners) {
-				for (int i = 0; i < listeners.size(); ++i) {
-					try {
-						listeners.get(i).onConnect(nodeId);
-					} catch (RemoteException e) {
-						Log.w(TAG, "Failed to notify listener ", e);
-						listeners.remove(i--);
+		mBackgroundHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (listeners) {
+					for (int i = 0; i < listeners.size(); ++i) {
+						try {
+							listeners.get(i).onConnect(nodeId);
+						} catch (RemoteException e) {
+							Log.w(TAG, "Failed to notify listener ", e);
+							listeners.remove(i--);
+						}
 					}
 				}
 			}
@@ -189,15 +199,18 @@ public class WearProviderService extends Service implements
 
 		nodes.remove(nodeId);
 
-		mBackgroundHandler.post(() -> {
-			synchronized (listeners) {
-				for (int i = 0; i < listeners.size(); ++i) {
-					try {
-						listeners.get(i).onError(nodeId,
-								String.format(Locale.ENGLISH, "Node disconnected: %s", nodeId));
-					} catch (RemoteException e) {
-						Log.w(TAG, "Failed to notify listener ", e);
-						listeners.remove(i--);
+		mBackgroundHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (listeners) {
+					for (int i = 0; i < listeners.size(); ++i) {
+						try {
+							listeners.get(i).onError(nodeId,
+									String.format(Locale.ENGLISH, "Node disconnected: %s", nodeId));
+						} catch (RemoteException e) {
+							Log.w(TAG, "Failed to notify listener ", e);
+							listeners.remove(i--);
+						}
 					}
 				}
 			}
@@ -207,16 +220,19 @@ public class WearProviderService extends Service implements
 	private void messageReceived(final String nodeId, final String message) {
 		LOGD(TAG, String.format("messageReceived - nodeId: %s", nodeId));
 
-		mBackgroundHandler.post(() -> {
-			synchronized (listeners) {
-				LOGD(TAG, String.format(Locale.ENGLISH, "Notifying %d listeners", listeners.size()));
+		mBackgroundHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (listeners) {
+					LOGD(TAG, String.format(Locale.ENGLISH, "Notifying %d listeners", listeners.size()));
 
-				for (int i = 0; i < listeners.size(); ++i) {
-					try {
-						listeners.get(i).onDataReceived(nodeId, message);
-					} catch (RemoteException e) {
-						Log.w(TAG, "Failed to notify listener ", e);
-						listeners.remove(i--);
+					for (int i = 0; i < listeners.size(); ++i) {
+						try {
+							listeners.get(i).onDataReceived(nodeId, message);
+						} catch (RemoteException e) {
+							Log.w(TAG, "Failed to notify listener ", e);
+							listeners.remove(i--);
+						}
 					}
 				}
 			}
@@ -228,11 +244,24 @@ public class WearProviderService extends Service implements
 
 		final byte[] message = data.getBytes();
 
-		mBackgroundHandler.post(() -> {
-			Task<Integer> result = Wearable.getMessageClient(WearProviderService.this)
-					.sendMessage(nodeId, MESSAGE_PATH, message);
-			result.addOnSuccessListener(aVoid -> LOGD(TAG, "Message sent to : " + nodeId));
-			result.addOnFailureListener(aVoid -> LOGD(TAG, "Message send failed"));
+		mBackgroundHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				Task<Integer> result = Wearable.getMessageClient(WearProviderService.this)
+						.sendMessage(nodeId, MESSAGE_PATH, message);
+				result.addOnSuccessListener(new OnSuccessListener<Integer>() {
+					@Override
+					public void onSuccess(Integer aVoid) {
+						LOGD(TAG, "Message sent to : " + nodeId);
+					}
+				});
+				result.addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception aVoid) {
+						LOGD(TAG, "Message send failed");
+					}
+				});
+			}
 		});
 	}
 

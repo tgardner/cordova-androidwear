@@ -29,7 +29,7 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	private WearMessageApi api = null;
 	private Intent serviceIntent = null;
 
-	private Hashtable<String, WearConnection> connections = new Hashtable<>();
+	private Hashtable<String, WearConnection> connections = new Hashtable<String, WearConnection>();
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
@@ -95,8 +95,8 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	private class WearConnection {
 		private String mHandle;
 
-		private List<CallbackContext> dataCallbacks = new ArrayList<>();
-		private List<CallbackContext> errorCallbacks = new ArrayList<>();
+		private List<CallbackContext> dataCallbacks = new ArrayList<CallbackContext>();
+		private List<CallbackContext> errorCallbacks = new ArrayList<CallbackContext>();
 
 		WearConnection(String handle) {
 			mHandle = handle;
@@ -120,17 +120,20 @@ public class AndroidWearPlugin extends CordovaPlugin {
 
 		private void notifyCallbacks(final List<CallbackContext> callbacks,
 									 final JSONObject data) {
-			cordova.getActivity().runOnUiThread(() -> {
-				Log.d(TAG, String.format("Notifying %d callbacks", callbacks.size()));
+			cordova.getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Log.d(TAG, String.format("Notifying %d callbacks", callbacks.size()));
 
-				for (CallbackContext context : callbacks) {
-					keepCallback(context, data);
+					for (CallbackContext context : callbacks) {
+						keepCallback(context, data);
+					}
 				}
 			});
 		}
 	}
 
-	private List<CallbackContext> connectCallbacks = new ArrayList<>();
+	private List<CallbackContext> connectCallbacks = new ArrayList<CallbackContext>();
 
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -257,9 +260,12 @@ public class AndroidWearPlugin extends CordovaPlugin {
 	}
 
 	private void notifyCallbacksOfConnection(final String connectionId) {
-		this.cordova.getActivity().runOnUiThread(() -> {
-			for (CallbackContext context : connectCallbacks) {
-				connect(context, connectionId);
+		this.cordova.getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				for (CallbackContext context : connectCallbacks) {
+					AndroidWearPlugin.this.connect(context, connectionId);
+				}
 			}
 		});
 	}
