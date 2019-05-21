@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-androidwear"
-    version="1.0.1">
+    version="1.0.2">
 
     <name>Android Wear</name>
 
@@ -53,9 +53,6 @@
         <source-file src="src/android/WearProviderService.java" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageApi.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
         <source-file src="aidl/android/WearMessageListener.aidl" target-dir="src/net/trentgardner/cordova/androidwear" />
-        <!-- Hack for Cordova android 7, not correctly loading aidl -->
-        <source-file src="aidl/android/WearMessageApi.aidl" target-dir="app/src/main/aidl/net/trentgardner/cordova/androidwear" />
-        <source-file src="aidl/android/WearMessageListener.aidl" target-dir="app/src/main/aidl/net/trentgardner/cordova/androidwear" />
         
     </platform>
 </plugin>
