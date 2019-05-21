@@ -24,8 +24,10 @@
     
     <platform name="android">
 
-        <framework src="com.google.android.gms:play-services-base:+" />
-        <framework src="com.google.android.gms:play-services-wearable:+" />
+        <preference name="PLAY_SERVICES_VERSION" default="11.8.0"/>
+
+        <framework src="com.google.android.gms:play-services-base:$PLAY_SERVICES_VERSION" />
+        <framework src="com.google.android.gms:play-services-wearable:$PLAY_SERVICES_VERSION" />
     
         <js-module src="www/androidwear.js" name="AndroidWear">
             <clobbers target="AndroidWear" />
